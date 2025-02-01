@@ -2,7 +2,7 @@ import json
 import xlsxwriter
 import pandas as pd
 
-with open("ex3.json") as f:  # automatisieren
+with open("/workspaces/RocketStats/refactorreplayfile/exampleReplays/ex1.json") as f:  # automatisieren
     re = json.load(f)
 
 
@@ -14,7 +14,8 @@ with open("ex3.json") as f:  # automatisieren
 # für den Anfang: Player und Controller Id
 def initialise_json_to_string(replay_json):
     temp_replay = json.dumps(replay_json)
-    first_replay = temp_replay[temp_replay.find('"Frames"'):]
+    found_Frames = temp_replay.find('"frames"')
+    first_replay = temp_replay[found_Frames:]
     return first_replay
 
 
@@ -94,6 +95,9 @@ class Ball:
 
 
 def create_table(replay):
+
+    current_word_for_id = '"actor_id": '
+
     def get_actor_by_id(put_player_list_in_here: [Player], id_of_searched_actor):
         for i in put_player_list_in_here:
             if i.id == id_of_searched_actor:
@@ -122,6 +126,7 @@ def create_table(replay):
     def get_int_after(token):
         # kann bis zu 3 ziffern lang sein. STRING BIS ZUM LETZTEN LEERZEICHEN VOR ZAHL EINGEBEN
 
+        
         number_string = ""
         j = 0
 
@@ -191,9 +196,11 @@ def create_table(replay):
         while True:
 
             # cut vor "Id" : sobald es mehr als nur controller sind braucht das n rework
-            replay.cut('{"Id": ', - len('{"Id": xyz'))
+            replay.cut(current_word_for_id, - (len(current_word_for_id)+3))     # +3 für die bis zu 3 ziffern.
 
-            temp_index = get_int_after('{"Id": ')  # temp = String
+            temp_index = get_int_after(current_word_for_id)  # temp = String
+            #print remaining lenght of rr
+            print(replay.rr.__len__())
 
             needToSave = mustSave()
             if 0 != needToSave:  # = dont save
@@ -223,7 +230,7 @@ def create_table(replay):
                     ball.ball_pos.set_update_pos(read_vector())
                 # print("New Ball Index = " + str(ball.ball_id))
 
-            replay.rr = replay.rr[len('{"Id": xyz,'):]
+            replay.rr = replay.rr[len(current_word_for_id)+3:]
 
             # ABBRUCH: wenn keyword "Time" vor der nächsten "Id" zu finden ist
             next_time = replay.rr.find('"Time"')
@@ -294,14 +301,14 @@ def create_table(replay):
         while True:
 
             next_occ_time = replay.rr.find('"Time": ')
-            next_occ_id = replay.rr.find('{"Id": ')
+            next_occ_id = replay.rr.find(current_word_for_id)
             if next_occ_time < next_occ_id:
                 write_line(list_to_print)
                 list_to_print = []
                 frame += 1
 
-            replay.cut('{"Id": ', - len('{"Id": xyz'))
-            next_id = get_int_after('{"Id": ')
+            replay.cut(current_word_for_id, - (len(current_word_for_id)+3))
+            next_id = get_int_after(current_word_for_id)
 
             if next_id == ball.ball_id:
                 ball.ball_pos.set_update_pos(read_vector())
@@ -324,10 +331,10 @@ def create_table(replay):
             next_tick = replay.rr.find('"TickMarks"')
             next_time = replay.rr.find('"Time"')
             if next_tick < next_time:
-                replay.rr = replay.rr[len('{"Id": xyz,'):]
+                replay.rr = replay.rr[len(current_word_for_id)+3:]
                 break
 
-            replay.rr = replay.rr[len('{"Id": xyz,'):]
+            replay.rr = replay.rr[len(current_word_for_id)+3:]
 
 
     #####################################
@@ -398,8 +405,8 @@ def smoothing_table(excel_workbook):
 ################################################
 # ACTUAL CODE:
 
-# replay = Replay(re)
-# temp_table = create_table(replay)
+replay = Replay(re)
+temp_table = create_table(replay)
 
 
 temp_table = pd.read_excel("better_table.xlsx")
