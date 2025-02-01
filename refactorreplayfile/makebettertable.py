@@ -2,7 +2,7 @@ import json
 import xlsxwriter
 import pandas as pd
 
-with open("/workspaces/RocketStats/refactorreplayfile/exampleReplays/ex1.json") as f:  # automatisieren
+with open("./exampleReplays/ex1.json") as f:  # automatisieren
     re = json.load(f)
 
 
