@@ -2,10 +2,15 @@
 # USE CAREFULLY !!!!!!!!!!!!!!  GLOBAL WAS USED mybe
 import json
 
-with open("7F9346474A7AF3D2367450B5744BCFD9.json") as f:
-    everything = json.load(f)
+import os
 
-right_cut = json.dumps(everything)
+# Construct the file path dynamically
+file_path = os.path.join(os.path.dirname(__file__), 'exampleReplays', 'ex2.json')
+
+with open(file_path) as f:  # automatisieren
+    re = json.load(f)
+
+right_cut = json.dumps(re)
 left_cut = ""
 next_enter = 0
 dif_deleted_ids = 0

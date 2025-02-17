@@ -1,8 +1,12 @@
 import json
 import xlsxwriter
 import pandas as pd
+import os
 
-with open("./exampleReplays/ex1.json") as f:  # automatisieren
+# Construct the file path dynamically
+file_path = os.path.join(os.path.dirname(__file__), 'exampleReplays', 'ex1.json')
+
+with open(file_path) as f:  # automatisieren
     re = json.load(f)
 
 
@@ -113,8 +117,7 @@ def create_table(replay):
         player_save = 1
         car_save = 2
         ball_save = 3
-        if replay.rr.find(
-                'TAGame.Default__PRI_TA') < 100:  # 100 ist grobe Abschätzung = {"Id": 0, "NameId": 0, "TypeName": "TAGame.Default__PRI_TA", "ClassName": "TAGame.PRI_TA", "Initial + ...
+        if replay.rr.find('TAGame.Default__PRI_TA') < 100:  # 100 ist grobe Abschätzung = {"Id": 0, "NameId": 0, "TypeName": "TAGame.Default__PRI_TA", "ClassName": "TAGame.PRI_TA", "Initial + ...
             return player_save
         elif replay.rr.find('Archetypes.Car.Car_Default') < 100:
             return car_save
@@ -188,6 +191,17 @@ def create_table(replay):
         return [temp_x, temp_y, temp_z]
 
     # Macht ne schöne sortierte erste Liste, und ab dem zweiten mal speichert es nur die neuen variablen
+
+
+    #FIXME also problem gefunden es gibt keine car ids mehr desch heißt pretty much alles hier muss angepasst werden
+
+    # vorherige Funktionsweiße: 
+    # 1 findet heraus was für ein Objekt der actor ist mithilfe von mustSave
+    # 2 erstellt die Spieler liste mit ihren zugehörigen car ids
+    # 3 erneuert bei bedarf die car ids
+
+    # neue Funktionsweiße:
+    # 
     def get_player_list():
 
         unsorted_controllers = []
@@ -199,7 +213,8 @@ def create_table(replay):
             replay.cut(current_word_for_id, - (len(current_word_for_id)+3))     # +3 für die bis zu 3 ziffern.
 
             temp_index = get_int_after(current_word_for_id)  # temp = String
-            #print remaining lenght of rr
+
+            # for debug print remaining lenght of rr
             print(replay.rr.__len__())
 
             needToSave = mustSave()
@@ -233,8 +248,8 @@ def create_table(replay):
             replay.rr = replay.rr[len(current_word_for_id)+3:]
 
             # ABBRUCH: wenn keyword "Time" vor der nächsten "Id" zu finden ist
-            next_time = replay.rr.find('"Time"')
-            next_id = replay.rr.find('{"Id":')
+            next_time = replay.rr.find('"time"')
+            next_id = replay.rr.find(current_word_for_id)
             if next_time < next_id:
                 print("Players Updated")
                 break
@@ -298,9 +313,20 @@ def create_table(replay):
         nonlocal frame
         list_to_print = []  # [[id],[x,y,z]],[id,...
 
+        tempTime
+
         while True:
 
             next_occ_time = replay.rr.find('"Time": ')
+
+            #look at the next time float, check delte
+            # if delta is smaller then 0.25 skip   // also vier datenpunkte pro sekunde für den anfang
+            #wichtig!: beim skippen könnte die tor bedingung übergangen werden also muss die auch überprüft werden
+
+            tempTime = get_float_after("time:")
+            print(tempTime)
+
+
             next_occ_id = replay.rr.find(current_word_for_id)
             if next_occ_time < next_occ_id:
                 write_line(list_to_print)
@@ -319,7 +345,7 @@ def create_table(replay):
                         x.player_pos.set_update_pos(read_vector())
                         list_to_print.append([[x.index_in_file], read_vector()])
 
-            # auf break testen: bis was in DeletedActorIds":[] was drinnen steht oder TickMarks auftaucht
+            # auf break testen: bis was in DeletedActorIds":[] was drinnen steht oder levels auftaucht
             test = replay.rr[replay.rr.find('"DeletedActorIds": [') + len('"DeletedActorIds": ['):].find(']')
 
             if 0 < test:
@@ -327,10 +353,10 @@ def create_table(replay):
                 replay.cut('"ActorUpdates": [{')
                 break
 
-            # Sobald "TickMarks" vor dem Nächsten "Time" kommt
-            next_tick = replay.rr.find('"TickMarks"')
-            next_time = replay.rr.find('"Time"')
-            if next_tick < next_time:
+            # Sobald "levels" vor dem Nächsten "time" kommt
+            next_lvl = replay.rr.find('"levels"')
+            next_time = replay.rr.find('time"')
+            if next_lvl < next_time:
                 replay.rr = replay.rr[len(current_word_for_id)+3:]
                 break
 
@@ -354,15 +380,15 @@ def create_table(replay):
 
         collect_data_til_next_goal_or_end()
 
-        # Sobald "TickMarks" vor dem Nächsten "Time" kommt
-        next_tick = replay.rr.find('"TickMarks"')
-        next_time = replay.rr.find('"Time"')
-        if next_tick < next_time:
+        # Sobald "levels" vor dem Nächsten "time" kommt
+        next_lvl = replay.rr.find('"levels"')
+        next_time = replay.rr.find('"time"')
+        if next_lvl < next_time:
             break
 
         if frame == 2488:
             print("debug")
-        print(frame)
+        # print(frame)
 
         get_player_list()
 

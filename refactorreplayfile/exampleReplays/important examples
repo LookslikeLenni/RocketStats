@@ -1,0 +1,111 @@
+ ex1,
+
+ line 1258, 
+ {
+    "actor_id": 1,
+    "stream_id": 34,
+    "object_id": 41,
+    "attribute": {
+        "Reservation": {
+        "number": 2,
+        "unique_id": {
+            "system_id": 11,
+            "remote_id": {
+            "Epic": "67daeddc88174c7ba245bf0a10f0e311"
+            },
+            "local_id": 0
+        },
+        "name": "Joinssssss",
+        "unknown1": true,
+        "unknown2": true,
+        "unknown3": 0
+        }
+    }
+}
+
+
+ln 4265, //first occurence of time
+{
+    "time": 10.802417,
+    "delta": 0.046951056,
+    "new_actors": [],
+    "deleted_actors": [],
+    "updated_actors": [
+      {
+        "actor_id": 2,
+        "stream_id": 21,
+        "object_id": 49,
+        "attribute": {
+          "Int64": "1736984720"
+        }
+      },
+      {
+        "actor_id": 2,
+        "stream_id": 27,
+        "object_id": 55,
+        "attribute": {
+          "Int": 68
+        }
+      },
+      {
+        "actor_id": 7,
+        "stream_id": 24,
+        "object_id": 263,
+        "attribute": {
+          "Boolean": false
+        }
+      },
+      {
+        "actor_id": 8,
+        "stream_id": 51,
+        "object_id": 277,
+        "attribute": {
+          "Byte": 159
+        }
+      }
+    ]
+  },
+
+  ln 5820, first movement after countdown, i guess!
+  {
+    "actor_id": 8,
+    "stream_id": 42,
+    "object_id": 138,
+    "attribute": {
+      "RigidBody": {
+        "sleeping": false,
+        "location": {
+          "x": -2046.11,
+          "y": 2558.11,
+          "z": 17.01
+        },
+        "rotation": {
+          "x": 0.0018207438,
+          "y": 0.004394062,
+          "z": -0.38268402,
+          "w": 0.92386705
+        },
+        "linear_velocity": {
+          "x": 75.05,
+          "y": -75.05,
+          "z": 0.05
+        },
+        "angular_velocity": {
+          "x": -0.05,
+          "y": -0.06,
+          "z": 0.0
+        }
+      }
+    }
+  },
+
+ln 241148  first time Deleted actors
+ln 680812 second time
+ln 847252 third time
+
+hilfreiches regex dafür 
+deleted_actors": \[\n
+
+
+Warum werden decals mehrfach angezeigt??
+Eins wird 18 Mal angezeigt
